@@ -11,6 +11,9 @@ const camera = new THREE.PerspectiveCamera(
 camera.position.z = 13;
 
 const scene = new THREE.Scene();
+const loadingOverlay = document.getElementById('loading-overlay');
+const loadingMessage = document.getElementById('loading-message');
+const loadingError = document.getElementById('loading-error');
 let bee;
 let mixer;
 const loader = new GLTFLoader();
@@ -22,13 +25,41 @@ loader.load('assets/models/demon_bee_full_texture.glb',
         mixer = new THREE.AnimationMixer(bee);
         mixer.clipAction(gltf.animations[2]).play();
         modelMove();
+        if (loadingOverlay) {
+            loadingOverlay.classList.add('is-hidden');
+        }
     },
-    function (xhr) {},
-    function (error) {}
+    function (xhr) {
+        if (!loadingMessage || !xhr.total) {
+            return;
+        }
+        const percent = Math.min((xhr.loaded / xhr.total) * 100, 100);
+        loadingMessage.textContent = `Loading 3D scene... ${Math.round(percent)}%`;
+    },
+    function (error) {
+        console.error('Failed to load 3D model', error);
+        if (!loadingOverlay) {
+            return;
+        }
+        loadingOverlay.classList.add('is-error');
+        if (loadingMessage) {
+            loadingMessage.textContent = '3D content failed to load.';
+        }
+        if (loadingError) {
+            loadingError.hidden = false;
+        }
+    }
 );
-const renderer = new THREE.WebGLRenderer({alpha: true});
+const renderer = new THREE.WebGLRenderer({
+    alpha: true,
+    antialias: true,
+    powerPreference: 'high-performance'
+});
+const container3D = document.getElementById('container3D');
+const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+renderer.setPixelRatio(dpr);
 renderer.setSize(window.innerWidth, window.innerHeight);
-document.getElementById('container3D').appendChild(renderer.domElement);
+container3D.appendChild(renderer.domElement);
 
 // light
 const ambientLight = new THREE.AmbientLight(0xffffff, 1.3);
@@ -39,10 +70,14 @@ topLight.position.set(500, 500, 500);
 scene.add(topLight);
 
 
-const reRender3D = () => {
-    requestAnimationFrame(reRender3D);
+let lastTime = 0;
+let rafId;
+const reRender3D = (time = 0) => {
+    rafId = requestAnimationFrame(reRender3D);
+    const delta = (time - lastTime) / 1000;
+    lastTime = time;
     renderer.render(scene, camera);
-    if(mixer) mixer.update(0.03);
+    if (mixer) mixer.update(Math.min(delta, 0.05));
 };
 reRender3D();
 
@@ -98,13 +133,27 @@ const modelMove = () => {
         })
     }
 }
-window.addEventListener('scroll', () => {
+const handleScroll = () => {
     if (bee) {
         modelMove();
     }
-})
-window.addEventListener('resize', () => {
+};
+window.addEventListener('scroll', handleScroll, { passive: true });
+
+const resizeRenderer = () => {
+    const nextDpr = Math.min(window.devicePixelRatio || 1, 1.5);
+    renderer.setPixelRatio(nextDpr);
     renderer.setSize(window.innerWidth, window.innerHeight);
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
-})
+};
+window.addEventListener('resize', resizeRenderer, { passive: true });
+
+document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+        cancelAnimationFrame(rafId);
+    } else {
+        lastTime = performance.now();
+        reRender3D(lastTime);
+    }
+});

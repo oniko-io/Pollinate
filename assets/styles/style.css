@@ -1,22 +1,72 @@
 @import url('https://fonts.cdnfonts.com/css/devil-breeze');
-@import url('https://fonts.cdnfonts.com/css/poppins');
 @import url('https://fonts.cdnfonts.com/css/bimbo');
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&display=swap');
 
+
+:root {
+    --bg: #171813;
+    --text: #eef8ce;
+    --muted: #c9d7a2;
+    --accent: #d1ff48;
+    --accent-2: #ffef7a;
+    --grid: rgba(115, 129, 75, 0.2);
+    --panel: rgba(23, 24, 19, 0.7);
+    --panel-border: rgba(209, 255, 72, 0.18);
+    --shadow: rgba(0, 0, 0, 0.35);
+    --font-body: "Sora", sans-serif;
+    --font-display: "Devil Breeze", "Sora", sans-serif;
+    --font-script: "Bimbo", cursive;
+}
+
+html {
+    scroll-behavior: smooth;
+}
 
 body {
     margin: 0;
-    font-family: "Montserrat", sans-serif;
-    background-color: #1B1B1B;
-    color: #eef8ce;
-    font-family: 'Poppins', sans-serif;
+    font-family: var(--font-body);
+    background-color: var(--bg);
+    color: var(--text);
     font-size: 14px;
+    line-height: 1.6;
+    letter-spacing: 0.01em;
     background-image:
+    radial-gradient(1100px 700px at 15% 10%, rgba(209, 255, 72, 0.18), transparent 60%),
+    radial-gradient(900px 600px at 85% 0%, rgba(255, 239, 122, 0.12), transparent 55%),
     url(../images/bg.png),
     repeating-linear-gradient(
-        to right, transparent 0 500px, #73814B33 500px 501px
+        to right, transparent 0 500px, var(--grid) 500px 501px
     );
-    background-size: 100%;
+    background-size: auto, auto, 100%, auto;
+    background-attachment: fixed;
 }
+
+body::before,
+body::after {
+    content: "";
+    position: fixed;
+    inset: auto;
+    width: 520px;
+    height: 520px;
+    border-radius: 50%;
+    filter: blur(0.5px);
+    opacity: 0.18;
+    pointer-events: none;
+    z-index: 0;
+}
+
+body::before {
+    top: -120px;
+    left: -160px;
+    background: radial-gradient(circle, rgba(209, 255, 72, 0.35), transparent 65%);
+}
+
+body::after {
+    bottom: -180px;
+    right: -140px;
+    background: radial-gradient(circle, rgba(255, 239, 122, 0.3), transparent 60%);
+}
+
 *::-webkit-scrollbar {
     width: 0;
 }
@@ -34,27 +84,28 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+    z-index: 1;
 }
 
 .content-fit {
     width: min(1200px, 90vw);
     margin: auto;
-    min-height: 100vh;
+    min-height: 80vh;
     position: relative;
-    padding-block: 10em;
+    padding-block: clamp(6rem, 14vh, 12rem);
 }
 header {
     padding-block: 1em;
     position: fixed;
     top: 0;
     width: 100%;
-    z-index: 10px;
     backdrop-filter: blur(20px);
     z-index: 100;
-    background-color: #1B1B1B11;
+    background-color: rgba(23, 24, 19, 0.6);
     background-image: repeating-linear-gradient(
-        to right, transparent 0 500px, #eee1 500px 501px
+        to right, transparent 0 500px, rgba(238, 248, 206, 0.08) 500px 501px
     );
+    border-bottom: 1px solid rgba(209, 255, 72, 0.15);
 }
 header .content-fit {
     display: flex;
@@ -63,18 +114,57 @@ header .content-fit {
     min-height: unset!important;
     padding-block: unset!important;
 }
+header .logo {
+    font-family: var(--font-display);
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    color: var(--accent);
+    text-decoration: none;
+    padding: 0.2em 0.6em;
+    border-radius: 999px;
+    border: 1px solid transparent;
+    transition: border-color 0.2s ease, color 0.2s ease, background-color 0.2s ease;
+}
+header .logo:hover,
+header .logo:focus-visible {
+    border-color: rgba(209, 255, 72, 0.4);
+    color: var(--accent);
+    background-color: rgba(209, 255, 72, 0.08);
+    outline: none;
+}
 header .content-fit nav ul{
     display: flex;
     gap: 2em;
+    align-items: center;
+}
+header .content-fit nav a {
+    color: var(--text);
+    text-decoration: none;
+    font-size: 0.9rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 0.35em 0.9em;
+    border-radius: 999px;
+    border: 1px solid transparent;
+    transition: border-color 0.2s ease, color 0.2s ease, background-color 0.2s ease;
+}
+header .content-fit nav a:hover,
+header .content-fit nav a:focus-visible {
+    border-color: rgba(209, 255, 72, 0.4);
+    color: var(--accent);
+    background-color: rgba(209, 255, 72, 0.08);
+    outline: none;
 }
 
 #banner .title {
-    color: #d1ff48;
-    font-size: 11em;
-    font-family: "devil breeze";
+    color: var(--accent);
+    font-size: clamp(3.2rem, 9vw, 11rem);
+    font-family: var(--font-display);
     font-weight: bold;
     position: relative;
     text-align: center;
+    text-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
 }
 #banner .title::before {
     content: attr(data-before);
@@ -82,10 +172,11 @@ header .content-fit nav ul{
     top: 0.5em;
     inset: 0.66em 0 0 0;
     z-index: -1;
-    color: #445022;
+    color: rgba(68, 80, 34, 0.9);
 }
 .section .decorate {
     position: absolute;
+    filter: drop-shadow(0 25px 40px rgba(0, 0, 0, 0.4));
 }
 #intro .content-fit {
     display: flex;
@@ -94,23 +185,33 @@ header .content-fit nav ul{
     align-items: center;
 }
 .section .number {
-    font-family: "devil breeze";
-    font-size: 15em;
+    font-family: var(--font-display);
+    font-size: clamp(4rem, 12vw, 14rem);
     font-weight: bold;
+    color: rgba(209, 255, 72, 0.15);
 }
 .section .content-fit .title {
-    font-family: "devil breeze";
-    font-size: 5em;
+    font-family: var(--font-display);
+    font-size: clamp(2.2rem, 5vw, 5.5rem);
     font-weight: bold;
+    color: var(--text);
+    margin-bottom: 0.6rem;
+}
+.section .des {
+    max-width: 42rem;
+}
+.section .des p {
+    color: var(--muted);
+    font-size: clamp(1rem, 1.8vw, 1.2rem);
 }
 #description .content-fit {
-    padding-right: 30%;
+    padding-right: clamp(0rem, 12vw, 28%);
 }
 #description .number {
-    font-size: 5em;
+    font-size: clamp(2.5rem, 6vw, 5rem);
 }
 #description .title {
-    font-size: 7em;
+    font-size: clamp(3rem, 7vw, 7rem);
     font-weight: 500;
 }
 #contact .content-fit {
@@ -123,12 +224,17 @@ header .content-fit nav ul{
 #contact table {
     width: min(800px, 90vw);
     padding-top: 2em;
-    font-size: 2em;
+    font-size: clamp(1rem, 3vw, 2rem);
     margin: auto;
+    border-collapse: collapse;
+    background: var(--panel);
+    border: 1px solid var(--panel-border);
+    border-radius: 1.2rem;
+    box-shadow: 0 25px 70px var(--shadow);
 }
 #contact table td {
-    padding-block: 0.5em;
-    border-bottom: 1px dashed #445022;
+    padding: 0.85em 1.4em;
+    border-bottom: 1px dashed rgba(68, 80, 34, 0.6);
 }
 #contact table td:nth-child(1) {
     text-align: left;
@@ -139,8 +245,9 @@ header .content-fit nav ul{
     font-weight: 200;
 }
 #contact .sign {
-    font-family: 'Bimbo', sans-serif;
-    font-size: 10em;
+    font-family: var(--font-script);
+    font-size: clamp(2.5rem, 8vw, 10rem);
+    color: var(--accent-2);
 }
 #container3D {
     position: fixed;
@@ -149,26 +256,95 @@ header .content-fit nav ul{
     z-index: 100;
     pointer-events: none;
 }
+.loading-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 120;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(13, 13, 10, 0.82);
+    backdrop-filter: blur(10px);
+    transition: opacity 0.4s ease;
+}
+.loading-overlay.is-hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+.loading-card {
+    display: grid;
+    gap: 0.75rem;
+    align-items: center;
+    justify-items: center;
+    padding: 1.8rem 2.2rem;
+    border-radius: 1.4rem;
+    background: rgba(23, 24, 19, 0.85);
+    border: 1px solid rgba(209, 255, 72, 0.2);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+    text-align: center;
+}
+.loading-spinner {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 3px solid rgba(209, 255, 72, 0.2);
+    border-top-color: var(--accent);
+    animation: spin 1.1s linear infinite;
+}
+.loading-text {
+    font-size: 0.95rem;
+    color: var(--text);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+.loading-error {
+    color: var(--accent-2);
+    font-size: 0.9rem;
+}
+.loading-error[hidden] {
+    display: none;
+}
+.loading-overlay.is-error .loading-spinner {
+    display: none;
+}
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
+    #container3D {
+        display: none;
+    }
+    .loading-overlay {
+        display: none;
+    }
+}
 @media screen and (max-width: 1023px){
     #banner .title {
-        font-size: 5em;
+        font-size: clamp(2.5rem, 7vw, 5rem);
     }
     #intro .content-fit {
         flex-direction: column;
+        gap: 2.5rem;
     }
 }
 @media screen and (max-width: 767px){
     #banner .title {
-        font-size: 3em;
+        font-size: clamp(2rem, 10vw, 3rem);
     }
     #intro .content-fit {
         flex-direction: column;
+        gap: 2rem;
     }
     .section .number {
-        font-size: 5em;
+        font-size: clamp(2rem, 12vw, 5rem);
     }
     .section .content-fit .title {
-        font-size: 2em;
+        font-size: clamp(1.8rem, 7vw, 2.6rem);
     }
     #description .content-fit {
         padding-right: 0;
@@ -177,9 +353,16 @@ header .content-fit nav ul{
         font-size: 1em;
     }
     #contact .sign {
-        font-size: 2em;
+        font-size: clamp(2rem, 10vw, 3rem);
     }
     #container3D {
         position: absolute;
+    }
+    header .content-fit nav ul {
+        gap: 0.6em;
+    }
+    header .content-fit nav a {
+        padding: 0.25em 0.6em;
+        font-size: 0.75rem;
     }
 }

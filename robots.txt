@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://cqilg.github.io/Pollinate/sitemap.xml
