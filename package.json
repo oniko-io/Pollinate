@@ -1,0 +1,26 @@
+{
+  "name": "pollinate",
+  "version": "1.0.0",
+  "description": "Interactive 3D web experience with scroll-driven animation using Three.js and GSAP",
+  "type": "module",
+  "main": "index.html",
+  "scripts": {
+    "start": "python -m http.server 8000",
+    "build": "echo 'No build step required for this static site'",
+    "deploy": "echo 'Ready for deployment to any static hosting service'"
+  },
+  "keywords": [
+    "3d",
+    "animation",
+    "three.js",
+    "gsap",
+    "interactive",
+    "webgl"
+  ],
+  "author": "oniko",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/oniko/pollinate"
+  }
+}
