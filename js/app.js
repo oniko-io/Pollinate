@@ -15,15 +15,64 @@ const loadingOverlay = document.getElementById('loading-overlay');
 const loadingMessage = document.getElementById('loading-message');
 const loadingError = document.getElementById('loading-error');
 let bee;
+let beePivot;
+let beeBasePosition;
+let beeBaseRotation;
 let mixer;
+let scrollStops = [];
+let scrollTicking = false;
+const lerp = (start, end, t) => start + (end - start) * t;
+const quadraticBezier = (p0, p1, p2, t) => {
+    const inv = 1 - t;
+    return (inv * inv * p0) + (2 * inv * t * p1) + (t * t * p2);
+};
+const curveDefaults = { x: 0.7, y: 0.35, z: 0 };
+const hoverConfig = {
+    position: { x: 0.08, y: 0.12, z: 0.06 },
+    rotation: { x: 0.04, y: 0.05, z: 0.02 },
+    speed: 0.85
+};
+
+const buildScrollStops = () => {
+    scrollStops = arrPositionModel
+        .map((item) => {
+            const el = document.getElementById(item.id);
+            return {
+                id: item.id,
+                top: el ? el.offsetTop : 0
+            };
+        })
+        .sort((a, b) => a.top - b.top);
+};
+
+const getScrollSegment = () => {
+    if (scrollStops.length < 2) {
+        return { index: 0, t: 0 };
+    }
+    const scrollY = window.scrollY;
+    for (let i = 0; i < scrollStops.length - 1; i += 1) {
+        const start = scrollStops[i].top;
+        const end = scrollStops[i + 1].top;
+        if (scrollY <= end) {
+            const t = (scrollY - start) / Math.max(end - start, 1);
+            return { index: i, t: Math.min(Math.max(t, 0), 1) };
+        }
+    }
+    return { index: scrollStops.length - 1, t: 0 };
+};
 const loader = new GLTFLoader();
 loader.load('assets/models/demon_bee_full_texture.glb',
     function (gltf) {
         bee = gltf.scene;
-        scene.add(bee);
+        beePivot = new THREE.Group();
+        beePivot.add(bee);
+        scene.add(beePivot);
+        beeBasePosition = bee.position.clone();
+        beeBaseRotation = bee.rotation.clone();
 
         mixer = new THREE.AnimationMixer(bee);
         mixer.clipAction(gltf.animations[2]).play();
+        buildScrollStops();
         modelMove();
         if (loadingOverlay) {
             loadingOverlay.classList.add('is-hidden');
@@ -76,6 +125,19 @@ const reRender3D = (time = 0) => {
     rafId = requestAnimationFrame(reRender3D);
     const delta = (time - lastTime) / 1000;
     lastTime = time;
+    if (bee && beeBasePosition && beeBaseRotation) {
+        const hoverTime = time * 0.001 * hoverConfig.speed;
+        bee.position.set(
+            beeBasePosition.x + Math.sin(hoverTime) * hoverConfig.position.x,
+            beeBasePosition.y + Math.cos(hoverTime * 0.9) * hoverConfig.position.y,
+            beeBasePosition.z + Math.sin(hoverTime * 0.7) * hoverConfig.position.z
+        );
+        bee.rotation.set(
+            beeBaseRotation.x + Math.sin(hoverTime * 0.8) * hoverConfig.rotation.x,
+            beeBaseRotation.y + Math.cos(hoverTime) * hoverConfig.rotation.y,
+            beeBaseRotation.z + Math.sin(hoverTime * 0.6) * hoverConfig.rotation.z
+        );
+    }
     renderer.render(scene, camera);
     if (mixer) mixer.update(Math.min(delta, 0.05));
 };
@@ -85,58 +147,78 @@ let arrPositionModel = [
     {
         id: 'banner',
         position: {x: 0, y: -1, z: 0},
-        rotation: {x: 0, y: 1.5, z: 0}
+        rotation: {x: 0, y: 1.5, z: 0},
+        curve: { x: 0.6, y: 0.35, z: 0 }
     },
     {
         id: "intro",
         position: { x: 1, y: -1, z: -5 },
         rotation: { x: 0.5, y: -0.5, z: 0 },
+        curve: { x: -0.35, y: 0.5, z: 0.1 }
     },
     {
         id: "description",
         position: { x: -1, y: -1, z: -5 },
         rotation: { x: 0, y: 0.5, z: 0 },
+        curve: { x: 0.4, y: -0.2, z: 0.2 }
     },
     {
         id: "contact",
         position: { x: 0.8, y: -1, z: 0 },
         rotation: { x: 0.3, y: -0.5, z: 0 },
+        curve: { x: 0, y: 0, z: 0 }
     },
 ];
 const modelMove = () => {
-    const sections = document.querySelectorAll('.section');
-    let currentSection;
-    sections.forEach((section) => {
-        const rect = section.getBoundingClientRect();
-        if (rect.top <= window.innerHeight / 3) {
-            currentSection = section.id;
-        }
-    });
-    let position_active = arrPositionModel.findIndex(
-        (val) => val.id == currentSection
-    );
-    if (position_active >= 0) {
-        let new_coordinates = arrPositionModel[position_active];
-        gsap.to(bee.position, {
-            x: new_coordinates.position.x,
-            y: new_coordinates.position.y,
-            z: new_coordinates.position.z,
-            duration: 3,
-            ease: "power1.out"
-        });
-        gsap.to(bee.rotation, {
-            x: new_coordinates.rotation.x,
-            y: new_coordinates.rotation.y,
-            z: new_coordinates.rotation.z,
-            duration: 3,
-            ease: "power1.out"
-        })
+    if (!beePivot) {
+        return;
     }
+    if (scrollStops.length === 0) {
+        buildScrollStops();
+    }
+    const { index, t } = getScrollSegment();
+    const current = arrPositionModel[index];
+    const next = arrPositionModel[Math.min(index + 1, arrPositionModel.length - 1)];
+
+    const curve = current.curve || curveDefaults;
+    const control = {
+        x: (current.position.x + next.position.x) * 0.5 + curve.x,
+        y: (current.position.y + next.position.y) * 0.5 + curve.y,
+        z: (current.position.z + next.position.z) * 0.5 + curve.z
+    };
+    const position = {
+        x: quadraticBezier(current.position.x, control.x, next.position.x, t),
+        y: quadraticBezier(current.position.y, control.y, next.position.y, t),
+        z: quadraticBezier(current.position.z, control.z, next.position.z, t)
+    };
+    const rotation = {
+        x: lerp(current.rotation.x, next.rotation.x, t),
+        y: lerp(current.rotation.y, next.rotation.y, t),
+        z: lerp(current.rotation.z, next.rotation.z, t)
+    };
+
+    gsap.to(beePivot.position, {
+        ...position,
+        duration: 0.35,
+        ease: "power2.out",
+        overwrite: true
+    });
+    gsap.to(beePivot.rotation, {
+        ...rotation,
+        duration: 0.35,
+        ease: "power2.out",
+        overwrite: true
+    });
 }
 const handleScroll = () => {
-    if (bee) {
-        modelMove();
+    if (!bee || scrollTicking) {
+        return;
     }
+    scrollTicking = true;
+    requestAnimationFrame(() => {
+        modelMove();
+        scrollTicking = false;
+    });
 };
 window.addEventListener('scroll', handleScroll, { passive: true });
 
@@ -146,6 +228,8 @@ const resizeRenderer = () => {
     renderer.setSize(window.innerWidth, window.innerHeight);
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
+    buildScrollStops();
+    modelMove();
 };
 window.addEventListener('resize', resizeRenderer, { passive: true });
 
