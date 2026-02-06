@@ -19,8 +19,12 @@
   ],
   "author": "oniko",
   "license": "MIT",
+  "homepage": "https://oniko-io.github.io/Pollinate/",
   "repository": {
     "type": "git",
-    "url": "https://github.com/oniko/pollinate"
+    "url": "https://github.com/oniko-io/Pollinate"
+  },
+  "bugs": {
+    "url": "https://github.com/oniko-io/Pollinate/issues"
   }
 }

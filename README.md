@@ -1,28 +1,31 @@
 # Pollinate - Interactive 3D Web Experience
 
-A cutting-edge 3D web experience featuring scroll-driven animation of a bee model. This project demonstrates advanced web technologies including WebGL, modern animation techniques, and responsive design.
+Pollinate is a bold, scroll-driven 3D web experience featuring a bee model animated with WebGL and GSAP. It blends high-impact motion design with modern front-end performance practices.
 
-## 🎨 Features
+Live demo: https://oniko-io.github.io/Pollinate/
 
-- **Interactive 3D Animation**: Dynamic bee model that responds to scroll position
-- **Smooth Motion Design**: GSAP-powered animations with fluid transitions
-- **WebGL Rendering**: Built with Three.js for high-performance 3D graphics
-- **Responsive Design**: Optimized for desktop, tablet, and mobile devices
-- **Performance Optimized**: Efficient rendering with automatic cleanup
+## Features
 
-## 🛠 Technology Stack
+- Scroll-driven 3D animation synced to page sections
+- GSAP motion choreography with smooth easing
+- Responsive layout for desktop, tablet, and mobile
+- Loading overlay with progress feedback and error fallback
+- Mobile-friendly rendering with capped device pixel ratio
+- Reduced-motion support for accessibility
 
-- **Three.js**: 3D rendering engine
-- **GSAP**: Animation library for smooth tweens
-- **WebGL**: Hardware-accelerated graphics
+## Tech Stack
 
-## 📁 Project Structure
+- Three.js (WebGL rendering)
+- GSAP (animation timing)
+- HTML + CSS + JavaScript (static site)
+
+## Project Structure
 
 ```
 Pollinate/
 ├── index.html                 # Main HTML file
 ├── js/
-│   └── app.js                # Main application logic
+│   └── app.js                # 3D scene and scroll logic
 ├── assets/
 │   ├── styles/
 │   │   └── style.css         # Global styles
@@ -30,105 +33,75 @@ Pollinate/
 │   │   ├── bg.png            # Background image
 │   │   ├── flower.png        # Decorative flower
 │   │   ├── leaf.png          # Decorative leaf
-│   │   └── leaf1.png         # Additional leaf decoration
+│   │   ├── leaf1.png         # Additional leaf decoration
+│   │   └── favicon.svg       # Site favicon
 │   └── models/
 │       └── demon_bee_full_texture.glb  # 3D bee model
-├── package.json              # Project metadata
-├── README.md                 # This file
-└── .gitignore               # Git configuration
+├── robots.txt                 # Search crawler rules
+├── sitemap.xml                # Search crawler sitemap
+├── package.json               # Project metadata
+├── README.md                  # This file
+└── .gitignore                 # Git configuration
 ```
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
-- A modern web browser with WebGL support
+- A modern browser with WebGL support
 - Python 3+ (for local development server)
 
 ### Local Development
 
-1. **Clone the repository**:
+1. Clone the repository:
    ```bash
-   git clone https://github.com/oniko/pollinate.git
-   cd pollinate
+   git clone https://github.com/oniko-io/Pollinate.git
+   cd Pollinate
    ```
 
-2. **Start local server**:
+2. Start a local server:
    ```bash
    npm start
    # or
    python -m http.server 8000
    ```
 
-3. **Open in browser**:
+3. Open in browser:
    ```
    http://localhost:8000
    ```
 
-## 📦 Deployment
+## Scripts
 
-This is a static website with no backend requirements. It can be deployed to:
+- `npm start`: start a local dev server
+- `npm run build`: no-op build placeholder
+- `npm run deploy`: no-op deploy placeholder
 
-- **Netlify**: Drag and drop the project folder
-- **Vercel**: Connect your Git repository
-- **GitHub Pages**: Push to gh-pages branch
-- **Any static hosting**: Upload all files to web server
-- **CDN**: Serve files through CloudFlare, AWS S3, etc.
+## Deployment
 
-## ✨ How It Works
+This is a static site and can be hosted anywhere. For GitHub Pages:
 
-1. **3D Scene Setup**: Three.js initializes the 3D scene with proper lighting and camera
-2. **Model Loading**: The bee model (glTF format) is loaded with animation support
-3. **Scroll Tracking**: JavaScript monitors scroll position and triggers animations
-4. **Dynamic Positioning**: GSAP animates the bee's position and rotation based on scroll
-5. **Responsive Rendering**: Automatically adjusts to window resizing
+1. Push to the default branch.
+2. In GitHub Pages settings, set the source to the root of the `main` branch.
+3. Update the canonical, OG tags, and sitemap URLs if the domain changes.
 
-## 🎯 Key Features Explained
+## Customization
 
-### Scroll-Driven Animation
-The bee model follows the user's scroll position, appearing in different locations and orientations for each section of the page.
+- Colors: edit `assets/styles/style.css`
+- Animation timing: update GSAP durations in `js/app.js`
+- Bee positions: adjust the `arrPositionModel` array in `js/app.js`
+- Fonts: update font imports in `assets/styles/style.css`
 
-### Responsive Design
-The layout adapts to different screen sizes:
-- Desktop: Full-featured experience
-- Tablet: Adjusted typography and spacing
-- Mobile: Optimized for smaller screens, absolute positioning for 3D container
-
-### Performance Optimization
-- CDN-hosted Three.js and GSAP reduce initial load time
-- Efficient animation frame updates
-- Proper garbage collection with event listeners
-
-## 🔧 Configuration
-
-No configuration files needed! The site works out of the box. However, you can customize:
-
-- **Colors**: Edit `assets/styles/style.css`
-- **Animation Timing**: Modify duration in GSAP calls in `js/app.js`
-- **Bee Positions**: Update `arrPositionModel` array in `js/app.js`
-- **Fonts**: Change font imports in `assets/styles/style.css`
-
-## 🌐 Browser Support
+## Browser Support
 
 - Chrome/Edge 60+
 - Firefox 55+
 - Safari 11+
-- All modern browsers with WebGL support
+- Any modern browser with WebGL support
 
-## 📝 License
+## License
 
-MIT License - Feel free to use this project for personal and commercial purposes.
+MIT License.
 
-## 👤 Author
+## Author
 
-Created by **oniko**
-
-## 🤝 Contributing
-
-Contributions are welcome! Feel free to:
-- Report bugs
-- Suggest features
-- Submit pull requests
-
----
-
-**Ready for production deployment!** 🚀
+Created by oniko.
